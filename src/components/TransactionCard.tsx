@@ -22,7 +22,7 @@ const TransactionCard = ({itemData}: Props) => {
             styles.transactionColor,
             {
               backgroundColor:
-                itemData.item.transactionType === 'DEPOSIT'
+                itemData.transactionType === 'DEPOSIT'
                   ? Colors.primaryDarkBlue
                   : Colors.dangerRed,
             },
@@ -30,13 +30,13 @@ const TransactionCard = ({itemData}: Props) => {
         />
         <View style={styles.content}>
           <CustomText
-            label={longDateHelper(itemData.item.date)}
+            label={longDateHelper(itemData.date)}
             fontSize={FontSizes.small - 2}
           />
           <CustomText
-            label={`Transaction Type: ${itemData.item.transactionType}`}
+            label={`Transaction Type: ${itemData.transactionType}`}
           />
-          <CustomText label={`Total Amount: ${itemData.item.amount}`} />
+          <CustomText label={`Total Amount: ${itemData.amount}`} />
         </View>
       </View>
     </Card>

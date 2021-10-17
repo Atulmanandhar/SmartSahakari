@@ -12,6 +12,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import Applogo from '../assets/images/logo.png';
+import Applogo2 from '../assets/images/mainlogo.png';
+import NepaliLogo from '../assets/images/nepalilogo.png';
 import CustomButton from '../components/CustomButton';
 import CustomTextInput from '../components/CustomTextInput';
 import {Colors, EMAIL_REGEX, GlobalStyles} from '../constants';
@@ -59,8 +61,9 @@ const Login = ({navigation}: appStackNavProps<'Login'>) => {
       contentContainerStyle={[styles.screen, GlobalStyles.paddingSpacing]}
       keyboardShouldPersistTaps="handled">
       <View style={styles.content}>
+   
         <View style={styles.imageContainer}>
-          <Image source={Applogo} style={styles.image} />
+          <Image source={Applogo2} style={styles.image} />
         </View>
         <View style={styles.inputView}>
           <Controller
@@ -163,6 +166,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     resizeMode: 'contain',
-    tintColor: Colors.primaryDarkBlue,
+    // tintColor: Colors.primaryDarkBlue,
   },
 });

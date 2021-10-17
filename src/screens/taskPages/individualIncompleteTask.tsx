@@ -1,6 +1,12 @@
 import React, {useState} from 'react';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomHeader from '../../components/CustomHeader';
 import {
@@ -11,7 +17,7 @@ import {
   Spacing,
 } from '../../constants';
 import {appStackParams} from '../../navigation/navigationParams';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../redux/reducers';
 import CustomText from '../../components/CustomText';
 import {RouteProp} from '@react-navigation/native';
@@ -24,8 +30,12 @@ import {
 import Card from '../../components/Card';
 import CustomButton from '../../components/CustomButton';
 import {RNToasty} from 'react-native-toasty';
-import {completeATask} from '../../redux/actions/taskAction';
+import {
+  completeATask,
+  createTodaysTransaction,
+} from '../../redux/actions/taskAction';
 import CustomModal from '../../components/CustomModal';
+import TransactionCard from '../../components/TransactionCard';
 
 interface Props {
   navigation: NativeStackNavigationProp<
@@ -34,6 +44,10 @@ interface Props {
   >;
   route: RouteProp<{params: {itemProp: any}}, 'params'>;
 }
+
+// const renderItem = (itemData: any) => {
+//   return <TransactionCard itemData={itemData} />;
+// };
 
 const IndividualIncompleteTask = ({navigation, route}: Props) => {
   const dispatch = useDispatch();
@@ -44,6 +58,12 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
     setModalVisible(!isModalVisible);
   };
   const {itemProp} = route.params;
+  const customersData = useSelector(
+    (state: RootState) => state.taskState.collectorsData,
+  );
+  const individualCustomer = customersData.filter(
+    (item: any) => item.customerId === itemProp.formValues.customerId,
+  );
 
   const handleSuccess = () => {
     navigation.pop(2);
@@ -56,7 +76,8 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
       amount: amountVal,
       transactionType,
     };
-    dispatch(completeATask(formValues, handleSuccess));
+    dispatch(createTodaysTransaction(formValues));
+    // dispatch(completeATask(formValues, handleSuccess));
   };
 
   const submitHandler = () => {
@@ -128,14 +149,6 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
             label="Fill in today's data:"
             fontSize={FontSizes.large}
           />
-          <CustomText label="Amount:" />
-          <CustomTextInput
-            placeholder="Enter Total Amount"
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            onChangeText={setAmountVal}
-            value={amountVal}
-          />
           <CustomText label="Transaction Type:" />
 
           <View style={styles.customButtonGroup}>
@@ -166,8 +179,34 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
               </TouchableOpacity>
             </Card>
           </View>
+          <CustomText label="Deposit Amount:" />
+          <CustomTextInput
+            placeholder="Enter Total Amount"
+            keyboardType="number-pad"
+            autoCapitalize="none"
+            onChangeText={setAmountVal}
+            value={amountVal}
+          />
+          <CustomText label="Withdraw Amount:" />
+          <CustomTextInput
+            placeholder="Enter Total Amount"
+            keyboardType="number-pad"
+            autoCapitalize="none"
+            onChangeText={setAmountVal}
+            value={amountVal}
+          />
         </View>
+        <CustomText
+          label={'Last 5 Transactions'}
+          style={styles.transactionTitle}
+          fontSize={FontSizes.large}
+          fontFamily={FontFamily.poppinsSemiBold}
+        />
+        {individualCustomer[0].last5Transactions.map((item: any) => {
+          return <TransactionCard itemData={item} key={`${item.id}`} />;
+        })}
       </ScrollView>
+
       <View style={styles.submitContainer}>
         <CustomButton label="Submit Entry" onPress={submitHandler} />
       </View>
@@ -232,5 +271,11 @@ const styles = StyleSheet.create({
   },
   textCenter: {
     textAlign: 'center',
+  },
+
+  transactionTitle: {
+    marginTop: Spacing.vs,
+    textDecorationLine: 'underline',
+    textDecorationColor: Colors.primaryDarkBlue,
   },
 });

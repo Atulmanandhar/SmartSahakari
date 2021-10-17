@@ -7,6 +7,7 @@ export const TOGGLE_TASK = 'TOGGLE_TASK';
 export const SET_COLLECTOR_DATA = 'SET_COLLECTOR_DATA';
 export const COMPLETE_A_TASK = 'COMPLETE_A_TASK';
 export const SUBMIT_TRANSACTIONS_SUCCESS = 'SUBMIT_TRANSACTIONS_SUCCESS';
+export const CREATE_TODAYS_TRANSACTION = 'CREATE_TODAYS_TRANSACTION';
 
 export type startTaskResult = {
   collectorId: number;
@@ -132,4 +133,9 @@ export const submitTransactions =
       });
       handleFailure();
     }
+  };
+
+export const createTodaysTransaction =
+  (formValue: any) => async (dispatch: any) => {
+    dispatch({type: CREATE_TODAYS_TRANSACTION, payload: formValue});
   };

@@ -38,7 +38,8 @@ const FontFamily = {
 const Colors = {
   primaryBlue: '#007694',
   // primaryDarkBlue:"#56328c",
-  primaryDarkBlue: '#1b1562',
+  // primaryDarkBlue: '#1b1562',
+  primaryDarkBlue: '#006BA6',
   // primaryDarkBlue: '#2B0548',
   secondaryBlue: 'rgba(0, 118, 148, 0.6)',
   dangerRed: '#FB5762',

@@ -2,6 +2,7 @@ import {Reducer} from 'redux';
 import {LOGOUT_USER} from '../actions/authAction';
 import {
   COMPLETE_A_TASK,
+  CREATE_TODAYS_TRANSACTION,
   SET_COLLECTOR_DATA,
   START_TASK,
   SUBMIT_TRANSACTIONS_SUCCESS,
@@ -13,6 +14,7 @@ const initialState = {
   collectorsTask: [],
   todaysDate: '',
   collectorsData: [],
+  todaysTransactions: [],
 };
 
 const taskReducer: Reducer<any, any> = (state = initialState, action: any) => {
@@ -46,6 +48,11 @@ const taskReducer: Reducer<any, any> = (state = initialState, action: any) => {
         ...state,
         isTaskRunning: false,
         collectorsTask: [],
+      };
+    case CREATE_TODAYS_TRANSACTION:
+      return {
+        ...state,
+        todaysTransactions: [...state.todaysTransactions, action.payload],
       };
 
     case LOGOUT_USER:
