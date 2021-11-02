@@ -1,7 +1,9 @@
 import {RNToasty} from 'react-native-toasty';
 import * as api from '../api';
 import taskCreator from '../helpers/taskCreator';
-import transactionCreator from '../helpers/transactionCreator';
+import transactionCreator, {
+  incompletedTasksFiller,
+} from '../helpers/transactionCreator';
 export const START_TASK = 'START_TASK';
 export const TOGGLE_TASK = 'TOGGLE_TASK';
 export const SET_COLLECTOR_DATA = 'SET_COLLECTOR_DATA';
@@ -85,18 +87,63 @@ export const completeATask =
     const remainingTask = collectorsTask.filter(
       (item: any) => item.customerId !== data.customerId,
     );
-    let editData = {...filteredTask[0], formValues: data, taskStatus: true};
+    let editData = {...filteredTask[0], taskStatus: true};
+    // let editData = {...filteredTask[0], formValues: data, taskStatus: true};
     let finalPayload = [...remainingTask, editData];
     dispatch({type: COMPLETE_A_TASK, payload: finalPayload});
     handleSucces();
   };
 
-export const submitTransactions =
+// export const submitTransactions =
+//   (handleSuccess: () => void, handleFailure: () => void) =>
+//   async (dispatch: any, getState: any) => {
+//     try {
+//       const {
+//         taskState: {collectorsTask, todaysDate},
+//         tempToken: {accessToken},
+//       } = getState();
+
+//       if (accessToken === null) {
+//         RNToasty.Error({
+//           title:
+//             'Somthing went wrong. Please check for a stable internet connection and try again',
+//         });
+//         handleFailure();
+//         return;
+//       }
+//       const completedTasks = collectorsTask.filter(
+//         (item: any) => item.taskStatus === true,
+//       );
+//       const customerTaskCreator = completedTasks.map((item: any) =>
+//         transactionCreator(item),
+//       );
+
+//       const response = await api.apiCreateBatchTransactions(
+//         accessToken,
+//         todaysDate,
+//         customerTaskCreator,
+//       );
+//       console.log(response.data);
+//       handleSuccess();
+//       RNToasty.Success({
+//         title: `Succefully submitted ${customerTaskCreator.length} transactions today`,
+//         duration: 1,
+//       });
+//       dispatch({type: SUBMIT_TRANSACTIONS_SUCCESS});
+//     } catch (err: any) {
+//       RNToasty.Error({
+//         title: err.response ? err.response.data?.message : err.message,
+//       });
+//       handleFailure();
+//     }
+//   };
+
+export const submitAllTodaysTransactions =
   (handleSuccess: () => void, handleFailure: () => void) =>
   async (dispatch: any, getState: any) => {
     try {
       const {
-        taskState: {collectorsTask, todaysDate},
+        taskState: {collectorsTask, todaysDate, todaysTransactions},
         tempToken: {accessToken},
       } = getState();
 
@@ -108,22 +155,27 @@ export const submitTransactions =
         handleFailure();
         return;
       }
-      const completedTasks = collectorsTask.filter(
-        (item: any) => item.taskStatus === true,
-      );
-      const customerTaskCreator = completedTasks.map((item: any) =>
-        transactionCreator(item),
-      );
 
+      const incompletedTasks = collectorsTask.filter(
+        (item: any) => item.taskStatus === false,
+      );
+      const incompleteTodaysTransactions = incompletedTasks.map((item: any) =>
+        incompletedTasksFiller(item.customerId),
+      );
+      console.log('herer');
+      const finalAllTransactions = [
+        ...todaysTransactions,
+        ...incompleteTodaysTransactions,
+      ];
       const response = await api.apiCreateBatchTransactions(
         accessToken,
         todaysDate,
-        customerTaskCreator,
+        finalAllTransactions,
       );
       console.log(response.data);
       handleSuccess();
       RNToasty.Success({
-        title: `Succefully submitted ${customerTaskCreator.length} transactions today`,
+        title: `Succefully submitted ${finalAllTransactions.length} transactions today`,
         duration: 1,
       });
       dispatch({type: SUBMIT_TRANSACTIONS_SUCCESS});

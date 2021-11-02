@@ -52,7 +52,11 @@ interface Props {
 const IndividualIncompleteTask = ({navigation, route}: Props) => {
   const dispatch = useDispatch();
   const [amountVal, setAmountVal] = useState<string>('');
+  const [depositVal, setDepositVal] = useState<string>('');
+  const [withdrawVal, setWithdrawVal] = useState<string>('');
   const [transactionIndex, setTransactionIndex] = useState<number>(0);
+  const [isDeposit, setIsDeposit] = useState<boolean>(false);
+  const [isWithdraw, setIsWithdraw] = useState<boolean>(false);
   const [isModalVisible, setModalVisible] = useState<boolean>(false);
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -62,35 +66,104 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
     (state: RootState) => state.taskState.collectorsData,
   );
   const individualCustomer = customersData.filter(
-    (item: any) => item.customerId === itemProp.formValues.customerId,
+    (item: any) => item.customerId === itemProp.customerId,
   );
+
+  const toggleTransactionType = (type: string): void => {
+    if (type === 'deposit') setIsDeposit(curr => !curr);
+    if (type === 'withdraw') setIsWithdraw(curr => !curr);
+  };
 
   const handleSuccess = () => {
     navigation.pop(2);
   };
 
   const submitModal = () => {
-    const transactionType = transactionIndex === 0 ? 'DEPOSIT' : 'WITHDRAW';
-    const formValues = {
-      customerId: itemProp.formValues.customerId,
-      amount: amountVal,
-      transactionType,
+    if (isDeposit) {
+      const formValues = {
+        customerId: itemProp.customerId,
+        amount: depositVal,
+        transactionType: 'DEPOSIT',
+      };
+      dispatch(createTodaysTransaction(formValues));
+    } else {
+      const formValues = {
+        customerId: itemProp.customerId,
+        amount: '0',
+        transactionType: 'DEPOSIT',
+      };
+      dispatch(createTodaysTransaction(formValues));
+    }
+    if (isWithdraw) {
+      const formValues = {
+        customerId: itemProp.customerId,
+        amount: withdrawVal,
+        transactionType: 'WITHDRAW',
+      };
+      dispatch(createTodaysTransaction(formValues));
+    }
+    const data = {
+      customerId: itemProp.customerId,
     };
-    dispatch(createTodaysTransaction(formValues));
-    // dispatch(completeATask(formValues, handleSuccess));
+
+    dispatch(completeATask(data, handleSuccess));
   };
 
   const submitHandler = () => {
-    if (/\S/.test(amountVal)) {
-      let isNum = /^\d+$/.test(amountVal);
-      if (isNum) {
-        toggleModal();
+    let errorCount = false;
+
+    if (isWithdraw) {
+      if (/\S/.test(withdrawVal)) {
+        let isNum = /^\d+$/.test(withdrawVal);
+        if (isNum) {
+          // toggleModal();
+        } else {
+          errorCount = true;
+
+          RNToasty.Error({
+            title: 'Withdrawl Amount can only be digits',
+            duration: 1,
+          });
+        }
       } else {
-        RNToasty.Error({title: 'Amount can only be digits', duration: 1});
+        errorCount = true;
+
+        RNToasty.Error({title: 'Please enter withdrawl amount', duration: 1});
       }
-    } else {
-      RNToasty.Error({title: 'Please enter amount', duration: 1});
     }
+
+    if (isDeposit) {
+      if (/\S/.test(depositVal)) {
+        let isNum = /^\d+$/.test(depositVal);
+        if (isNum) {
+          // toggleModal();
+        } else {
+          errorCount = true;
+
+          RNToasty.Error({
+            title: 'Deposit Amount can only be digits',
+            duration: 1,
+          });
+        }
+      } else {
+        errorCount = true;
+
+        RNToasty.Error({title: 'Please enter deposit amount', duration: 1});
+      }
+    }
+
+    if (!errorCount) toggleModal();
+
+    // if (/\S/.test(amountVal)) {
+    //   let isNum = /^\d+$/.test(amountVal);
+    //   if (isNum) {
+    //     toggleModal();
+    //   } else {
+    //     RNToasty.Error({title: 'Amount can only be digits', duration: 1});
+    //   }
+    // } else {
+    //   RNToasty.Error({title: 'Please enter amount', duration: 1});
+    // }
   };
 
   return (
@@ -116,11 +189,18 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
           <View style={styles.fullWidth}>
             <CustomLabel title="Name:" value={itemProp.name} />
             <CustomLabel title="Location:" value={itemProp.location} />
-            <CustomLabel title="Amount:" value={amountVal} />
-            <CustomLabel
-              title="Transaction Type:"
-              value={transactionIndex === 0 ? 'Deposit' : 'Withdraw'}
-            />
+            {isDeposit && (
+              <>
+                <CustomLabel title="Transaction Type:" value={'Deposit'} />
+                <CustomLabel title="Deposit Amount:" value={depositVal} />
+              </>
+            )}
+            {isWithdraw && (
+              <>
+                <CustomLabel title="Transaction Type:" value={'Withdraw'} />
+                <CustomLabel title="Withdrawl Amount:" value={withdrawVal} />
+              </>
+            )}
           </View>
           <View style={styles.fullWidth}>
             <CustomButton label="Confirm Submission" onPress={submitModal} />
@@ -139,10 +219,7 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
           <CustomLabel title="Name:" value={itemProp.name} />
           <CustomLabel title="Location:" value={itemProp.location} />
           <CustomLabel title="Mobile Number:" value={itemProp.mobileNumber} />
-          <CustomLabel
-            title="Customer Id:"
-            value={itemProp.formValues.customerId}
-          />
+          <CustomLabel title="Customer Id:" value={itemProp.customerId} />
           <View style={styles.line} />
 
           <CustomText
@@ -156,12 +233,13 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
               <TouchableOpacity
                 style={[
                   styles.touchWrapper,
-                  transactionIndex === 0 && styles.activeButton,
+                  // transactionIndex === 0 && styles.activeButton,
+                  isDeposit && styles.activeButton,
                 ]}
-                onPress={() => setTransactionIndex(0)}>
+                onPress={() => toggleTransactionType('deposit')}>
                 <CustomText
                   label="Deposit"
-                  color={transactionIndex === 0 ? Colors.white : Colors.black}
+                  color={isDeposit ? Colors.white : Colors.black}
                 />
               </TouchableOpacity>
             </Card>
@@ -169,32 +247,41 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
               <TouchableOpacity
                 style={[
                   styles.touchWrapper,
-                  transactionIndex === 1 && styles.activeButton,
+                  isWithdraw && styles.activeButton,
+                  // transactionIndex === 1 && styles.activeButton,
                 ]}
-                onPress={() => setTransactionIndex(1)}>
+                onPress={() => toggleTransactionType('withdraw')}>
                 <CustomText
                   label="Withdraw"
-                  color={transactionIndex === 1 ? Colors.white : Colors.black}
+                  color={isWithdraw ? Colors.white : Colors.black}
                 />
               </TouchableOpacity>
             </Card>
           </View>
-          <CustomText label="Deposit Amount:" />
-          <CustomTextInput
-            placeholder="Enter Total Amount"
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            onChangeText={setAmountVal}
-            value={amountVal}
-          />
-          <CustomText label="Withdraw Amount:" />
-          <CustomTextInput
-            placeholder="Enter Total Amount"
-            keyboardType="number-pad"
-            autoCapitalize="none"
-            onChangeText={setAmountVal}
-            value={amountVal}
-          />
+          {isDeposit && (
+            <>
+              <CustomText label="Deposit Amount:" />
+              <CustomTextInput
+                placeholder="Enter Total Amount"
+                keyboardType="number-pad"
+                autoCapitalize="none"
+                onChangeText={setDepositVal}
+                value={depositVal}
+              />
+            </>
+          )}
+          {isWithdraw && (
+            <>
+              <CustomText label="Withdraw Amount:" />
+              <CustomTextInput
+                placeholder="Enter Total Amount"
+                keyboardType="number-pad"
+                autoCapitalize="none"
+                onChangeText={setWithdrawVal}
+                value={withdrawVal}
+              />
+            </>
+          )}
         </View>
         <CustomText
           label={'Last 5 Transactions'}
@@ -253,7 +340,7 @@ const styles = StyleSheet.create({
 
   modalCard: {
     ...GlobalStyles.paddingSpacing,
-    height: heightPercentageToDP(50),
+    height: heightPercentageToDP(70),
     alignItems: 'center',
     justifyContent: 'space-around',
   },

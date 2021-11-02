@@ -35,14 +35,14 @@ const individualCompleteTask = ({navigation, route}: Props) => {
         <CustomLabel title="Mobile Number:" value={itemProp.mobileNumber} />
         <CustomLabel title="Business Type:" value={itemProp.businessType} />
         <CustomLabel title="Customer Id:" value={itemProp.customerId} />
-        <CustomLabel
+        {/* <CustomLabel
           title="Transaction Type:"
           value={itemProp.formValues.transactionType}
         />
         <CustomLabel
           title="Total Amount:"
           value={`Nrs. ${itemProp.formValues.amount}`}
-        />
+        /> */}
       </ScrollView>
     </SafeAreaView>
   );

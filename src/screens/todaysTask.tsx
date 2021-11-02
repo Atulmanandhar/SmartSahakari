@@ -18,7 +18,10 @@ import {useNetInfo} from '@react-native-community/netinfo';
 import StartPage from './taskPages/startPage';
 import {RootState} from '../redux/reducers';
 import CustomButton from '../components/CustomButton';
-import {submitTransactions, toggleTask} from '../redux/actions/taskAction';
+import {
+  submitAllTodaysTransactions,
+  toggleTask,
+} from '../redux/actions/taskAction';
 import TaskRunningPage from './taskPages/taskRunningPage';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import Card from '../components/Card';
@@ -65,8 +68,9 @@ const TodaysTask = ({navigation}: Props) => {
   };
 
   const submitTransactionsHandler = () => {
-    setIsSubmitting(true);
-    dispatch(submitTransactions(handleSuccess, handleFailure));
+    // setIsSubmitting(true);
+    // dispatch(submitTransactions(handleSuccess, handleFailure));
+    dispatch(submitAllTodaysTransactions(handleSuccess, handleFailure));
   };
 
   return (
