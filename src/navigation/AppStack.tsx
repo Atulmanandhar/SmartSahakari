@@ -1,5 +1,4 @@
 import React, {useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {appStackParams} from './navigationParams';
 import {useDispatch} from 'react-redux';
@@ -8,7 +7,6 @@ import {
   ClientDetails,
   Home,
   Clients,
-  Login,
   VerifyPayment,
   TodaysTask,
 } from '../screens';
@@ -18,6 +16,7 @@ import IncompleteTasks from '../screens/taskPages/incompleteTaskScreen';
 import CompleteTasks from '../screens/taskPages/completeTaskScreen';
 import IndividualIncompleteTask from '../screens/taskPages/individualIncompleteTask';
 import individualCompleteTask from '../screens/taskPages/individualCompleteTask';
+import MainHome from '../screens/MainHome';
 
 interface Props {}
 const Stack = createNativeStackNavigator<appStackParams>();
@@ -35,13 +34,15 @@ const AppStack = (props: Props) => {
   }, [netInfo]);
   return (
     <Stack.Navigator screenOptions={{headerShown: false, animation: 'fade'}}>
+      {/* <Stack.Screen name="MainHome" component={MainHome} /> */}
+      <Stack.Screen name="TodaysTask" component={TodaysTask} />
+
       <Stack.Screen name="Home" component={Home} />
 
       <Stack.Screen name="ClientDetails" component={ClientDetails} />
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Clients" component={Clients} />
       <Stack.Screen name="VerifyPayment" component={VerifyPayment} />
-      <Stack.Screen name="TodaysTask" component={TodaysTask} />
       <Stack.Screen name="IncompleteTasks" component={IncompleteTasks} />
       <Stack.Screen name="CompleteTasks" component={CompleteTasks} />
       <Stack.Screen
@@ -57,5 +58,3 @@ const AppStack = (props: Props) => {
 };
 
 export default AppStack;
-
-const styles = StyleSheet.create({});

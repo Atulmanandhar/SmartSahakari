@@ -125,6 +125,7 @@ const Login = ({navigation}: appStackNavProps<'Login'>) => {
                 error={errors.password}
                 errorText={errors?.password?.message}
                 onSubmitEditing={handleSubmit(onSubmit)}
+                passwordType
               />
             )}
           />

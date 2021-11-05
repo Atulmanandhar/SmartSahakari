@@ -4,6 +4,7 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
+  Switch,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -74,6 +75,8 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
     if (type === 'withdraw') setIsWithdraw(curr => !curr);
   };
 
+  const toggleSwitch = () => setIsWithdraw(curr => !curr);
+
   const handleSuccess = () => {
     navigation.pop(2);
   };
@@ -112,6 +115,24 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
   const submitHandler = () => {
     let errorCount = false;
 
+    if (/\S/.test(depositVal)) {
+      let isNum = /^\d+$/.test(depositVal);
+      if (isNum) {
+        // toggleModal();
+      } else {
+        errorCount = true;
+
+        RNToasty.Error({
+          title: 'Deposit Amount can only be digits',
+          duration: 1,
+        });
+      }
+    } else {
+      errorCount = true;
+
+      RNToasty.Error({title: 'Please enter deposit amount', duration: 1});
+    }
+
     if (isWithdraw) {
       if (/\S/.test(withdrawVal)) {
         let isNum = /^\d+$/.test(withdrawVal);
@@ -132,38 +153,7 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
       }
     }
 
-    if (isDeposit) {
-      if (/\S/.test(depositVal)) {
-        let isNum = /^\d+$/.test(depositVal);
-        if (isNum) {
-          // toggleModal();
-        } else {
-          errorCount = true;
-
-          RNToasty.Error({
-            title: 'Deposit Amount can only be digits',
-            duration: 1,
-          });
-        }
-      } else {
-        errorCount = true;
-
-        RNToasty.Error({title: 'Please enter deposit amount', duration: 1});
-      }
-    }
-
     if (!errorCount) toggleModal();
-
-    // if (/\S/.test(amountVal)) {
-    //   let isNum = /^\d+$/.test(amountVal);
-    //   if (isNum) {
-    //     toggleModal();
-    //   } else {
-    //     RNToasty.Error({title: 'Amount can only be digits', duration: 1});
-    //   }
-    // } else {
-    //   RNToasty.Error({title: 'Please enter amount', duration: 1});
-    // }
   };
 
   return (
@@ -189,12 +179,11 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
           <View style={styles.fullWidth}>
             <CustomLabel title="Name:" value={itemProp.name} />
             <CustomLabel title="Location:" value={itemProp.location} />
-            {isDeposit && (
-              <>
-                <CustomLabel title="Transaction Type:" value={'Deposit'} />
-                <CustomLabel title="Deposit Amount:" value={depositVal} />
-              </>
-            )}
+
+            <>
+              <CustomLabel title="Transaction Type:" value={'Deposit'} />
+              <CustomLabel title="Deposit Amount:" value={depositVal} />
+            </>
             {isWithdraw && (
               <>
                 <CustomLabel title="Transaction Type:" value={'Withdraw'} />
@@ -227,7 +216,7 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
             fontSize={FontSizes.large}
           />
           <CustomText label="Transaction Type:" />
-
+          {/* 
           <View style={styles.customButtonGroup}>
             <Card style={styles.customButton}>
               <TouchableOpacity
@@ -257,24 +246,35 @@ const IndividualIncompleteTask = ({navigation, route}: Props) => {
                 />
               </TouchableOpacity>
             </Card>
+          </View> */}
+
+          <CustomText label="Deposit Amount:" />
+          <CustomTextInput
+            placeholder="Enter amount to deposit"
+            keyboardType="number-pad"
+            autoCapitalize="none"
+            onChangeText={setDepositVal}
+            value={depositVal}
+          />
+          <View style={styles.switchContainer}>
+            <CustomText
+              label="Withdraw"
+              color={Colors.black}
+              fontSize={FontSizes.large}
+            />
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor={isWithdraw ? Colors.primaryDarkBlue : '#f4f3f4'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isWithdraw}
+            />
           </View>
-          {isDeposit && (
-            <>
-              <CustomText label="Deposit Amount:" />
-              <CustomTextInput
-                placeholder="Enter Total Amount"
-                keyboardType="number-pad"
-                autoCapitalize="none"
-                onChangeText={setDepositVal}
-                value={depositVal}
-              />
-            </>
-          )}
           {isWithdraw && (
             <>
               <CustomText label="Withdraw Amount:" />
               <CustomTextInput
-                placeholder="Enter Total Amount"
+                placeholder="Enter withdrawl request amount"
                 keyboardType="number-pad"
                 autoCapitalize="none"
                 onChangeText={setWithdrawVal}
@@ -364,5 +364,10 @@ const styles = StyleSheet.create({
     marginTop: Spacing.vs,
     textDecorationLine: 'underline',
     textDecorationColor: Colors.primaryDarkBlue,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });

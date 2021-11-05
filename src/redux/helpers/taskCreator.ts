@@ -6,10 +6,10 @@ function taskCreator(task: any) {
     //   amount: '',
     //   transactionType: '',
     // },
-    name: task.name,
-    location: task.location,
-    mobileNumber: task.mobileNumber,
-    businessType: task.businessType,
+    name: task.accountName,
+    location: task.permanentTole,
+    mobileNumber: task.mailMobileNumber,
+    businessType: task.occupation,
     taskStatus: false,
   };
 }

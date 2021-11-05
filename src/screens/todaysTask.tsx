@@ -78,7 +78,9 @@ const TodaysTask = ({navigation}: Props) => {
       <CustomHeader
         labelName="Todays Task"
         leftIcon="arrow-back"
-        leftIconPress={() => navigation.pop()}
+        leftIconPress={() => navigation.navigate('Home')}
+        rightIcon={'ios-person-circle-outline'}
+        rightIconPress={()=>navigation.navigate("Profile")}
       />
 
       <CustomModal isVisible={isModalVisible} onBackdropPress={toggleModal}>
@@ -105,17 +107,6 @@ const TodaysTask = ({navigation}: Props) => {
         {taskState.isTaskRunning && (
           <CustomButton label="Submit Todays Work" onPress={toggleModal} />
         )}
-
-        {/* <CustomButton label="Toggle State" onPress={toggleStateHandler} />
-        <CustomText
-          label={internetState}
-          style={{textAlign: 'center'}}
-          color={
-            internetState === 'No Internet Connection'
-              ? Colors.dangerRed
-              : Colors.primaryBlue
-          }
-        /> */}
       </View>
     </SafeAreaView>
   );
@@ -160,3 +151,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+{
+  /* <CustomButton label="Toggle State" onPress={toggleStateHandler} />
+        <CustomText
+          label={internetState}
+          style={{textAlign: 'center'}}
+          color={
+            internetState === 'No Internet Connection'
+              ? Colors.dangerRed
+              : Colors.primaryBlue
+          }
+        /> */
+}

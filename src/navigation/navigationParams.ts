@@ -13,6 +13,7 @@ export type appStackParams = {
   CompleteTasks: undefined;
   IndividualIncompleteTask: {itemProp: any};
   IndividualCompleteTask: {itemProp: any};
+  MainHome: undefined;
 };
 
 export type appStack =
@@ -25,7 +26,8 @@ export type appStack =
   | 'IncompleteTasks'
   | 'CompleteTasks'
   | 'IndividualIncompleteTask'
-  | 'IndividualCompleteTask';
+  | 'IndividualCompleteTask'
+  | 'MainHome';
 
 export type appStackNavProps<T extends keyof appStackParams> = {
   navigation: NativeStackNavigationProp<appStackParams, T>;
